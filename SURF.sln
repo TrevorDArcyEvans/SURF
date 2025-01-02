@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathNet.Iridium", "mathnet-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenSURF", "OpenSURF\OpenSURF.csproj", "{EDA9BFAA-9D3D-4C64-BEEC-0D61E78AFA99}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SURF.UI.CLI", "SURF.UI.CLI\SURF.UI.CLI.csproj", "{0E5BC90E-C2D1-4A64-AE1F-8A8B46F7B315}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{EDA9BFAA-9D3D-4C64-BEEC-0D61E78AFA99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDA9BFAA-9D3D-4C64-BEEC-0D61E78AFA99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDA9BFAA-9D3D-4C64-BEEC-0D61E78AFA99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E5BC90E-C2D1-4A64-AE1F-8A8B46F7B315}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E5BC90E-C2D1-4A64-AE1F-8A8B46F7B315}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E5BC90E-C2D1-4A64-AE1F-8A8B46F7B315}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E5BC90E-C2D1-4A64-AE1F-8A8B46F7B315}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,10 +1,11 @@
 namespace OpenSURF;
 
+using System;
 using System.Drawing;
 
-public interface IImage
+public interface IImage : IDisposable
 {
-  int Width { get; set; }
-  int Height { get; set; }
+  int Width { get; }
+  int Height { get; }
   Color GetPixel(int x, int y);
 }

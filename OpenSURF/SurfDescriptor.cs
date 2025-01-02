@@ -22,7 +22,12 @@ public class SurfDescriptor
   /// <summary>
   /// The integral image which is being used
   /// </summary>
-  private IntegralImage _img;
+  private readonly IntegralImage _img;
+
+  public SurfDescriptor(IntegralImage img)
+  {
+    _img = img;
+  }
 
   /// <summary>
   /// Build descriptor vector for each interest point in the supplied list
@@ -31,14 +36,12 @@ public class SurfDescriptor
   /// <param name="upright"></param>
   /// <param name="extended"></param>
   /// <param name="img"></param>
-  public void DescribeInterestPoints(List<IPoint> ipts, bool upright, bool extended, IntegralImage img)
+  public void DescribeInterestPoints(List<IPoint> ipts, bool upright, bool extended)
   {
     if (ipts.Count == 0)
     {
       return;
     }
-
-    _img = img;
 
     foreach (var ip in ipts)
     {
@@ -53,7 +56,10 @@ public class SurfDescriptor
       }
 
       // if we want rotation invariance get the orientation
-      if (!upright) GetOrientation(ip);
+      if (!upright)
+      {
+        GetOrientation(ip);
+      }
 
       // Extract SURF descriptor
       GetDescriptor(ip, upright, extended);
@@ -134,7 +140,6 @@ public class SurfDescriptor
     // assign orientation of the dominant response vector
     ip.Orientation = (float)orientation;
   }
-
 
   /// <summary>
   /// Construct descriptor vector for this interest point

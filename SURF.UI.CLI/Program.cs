@@ -30,10 +30,14 @@ internal static class Program
       var sd = new SurfDescriptor(intImg);
       sd.DescribeInterestPoints(intPts, false, false);
 
+      var imgFileName = System.IO.Path.GetFileNameWithoutExtension(inputFile);
+      var outFileName = $"interest-points-{imgFileName}.jpg";
+
       var redPen = Pens.Solid(Color.Red, 1);
       var bluePen = Pens.Solid(Color.Blue, 1);
       var whitePen = Pens.Solid(Color.White, 1);
-      img.Mutate(x =>
+      using var outImg = img.CloneAs<Rgba32>();
+      outImg.Mutate(x =>
       {
         foreach (var ip in intPts)
         {
@@ -44,15 +48,15 @@ internal static class Program
           var ptR = new Point(Convert.ToInt32(R * Math.Cos(ip.Orientation)), Convert.ToInt32(R * Math.Sin(ip.Orientation)));
 
           var myPen = ip.Laplacian > 0 ? bluePen : redPen;
+          var circle = new EllipsePolygon(pt.X, pt.Y, S, S);
 
-          // x.DrawEllipse(myPen, pt.X - R, pt.Y - R, S, S);
-          // x.DrawLine(new Pen(Color.FromArgb(0, 255, 0)), new Point(pt.X, pt.Y), new Point(pt.X + ptR.X, pt.Y + ptR.Y));
+          x.Draw(myPen, circle);
+          x.Draw(whitePen,
+            new Path(new LinearLineSegment(new PointF(pt.X, pt.Y),
+              new PointF(pt.X + ptR.X, pt.Y + ptR.Y))));
         }
       });
-
-      var imgFileName = System.IO.Path.GetFileNameWithoutExtension(inputFile);
-      var outFileName = $"interest-points-{imgFileName}.jpg";
-      //await sift.Image.SaveAsJpegAsync(outFileName);
+      await outImg.SaveAsJpegAsync(outFileName);
 
       Console.WriteLine($"{imgFileName} --> {outFileName}");
     }

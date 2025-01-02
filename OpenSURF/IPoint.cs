@@ -7,42 +7,42 @@ public class IPoint
   /// </summary>
   public IPoint()
   {
-    orientation = 0;
+    Orientation = 0;
   }
 
   /// <summary>
   /// Coordinates of the detected interest point
   /// </summary>
-  public float x, y;
+  public float X, Y;
 
   /// <summary>
   /// Detected scale
   /// </summary>
-  public float scale;
+  public float Scale;
 
   /// <summary>
   /// Response of the detected feature (strength)
   /// </summary>
-  public float response;
+  public float Response;
 
   /// <summary>
   /// Orientation measured anti-clockwise from +ve x-axis
   /// </summary>
-  public float orientation;
+  public float Orientation;
 
   /// <summary>
   /// Sign of laplacian for fast matching purposes
   /// </summary>
-  public int laplacian;
+  public int Laplacian;
 
   /// <summary>
   /// Descriptor vector
   /// </summary>
-  public int descriptorLength;
-  public float [] descriptor = null;
-  public void SetDescriptorLength(int Size)
+  public int DescriptorLength;
+  public float [] Descriptor = null;
+  public void SetDescriptorLength(int size)
   {
-    descriptorLength = Size;
-    descriptor = new float[Size];
+    DescriptorLength = size;
+    Descriptor = new float[size];
   }
 }

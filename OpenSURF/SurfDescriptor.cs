@@ -9,7 +9,7 @@ public class SurfDescriptor
   /// <summary>
   /// Gaussian distribution with sigma = 2.5.  Used as a fast lookup
   /// </summary>
-  float[,] gauss25 = new float[7, 7] {
+  private float[,] gauss25 = new float[7, 7] {
     {0.02350693969273f,0.01849121369071f,0.01239503121241f,0.00708015417522f,0.00344628101733f,0.00142945847484f,0.00050524879060f},
     {0.02169964028389f,0.01706954162243f,0.01144205592615f,0.00653580605408f,0.00318131834134f,0.00131955648461f,0.00046640341759f},
     {0.01706954162243f,0.01342737701584f,0.00900063997939f,0.00514124713667f,0.00250251364222f,0.00103799989504f,0.00036688592278f},
@@ -22,7 +22,7 @@ public class SurfDescriptor
   /// <summary>
   /// The integral image which is being used
   /// </summary>
-  IntegralImage img;
+  private IntegralImage img;
     
   /// <summary>
   /// Static one-call do it all function
@@ -33,10 +33,9 @@ public class SurfDescriptor
   /// <param name="upright"></param>
   public static void DecribeInterestPoints(List<IPoint> ipts, bool upright, bool extended, IntegralImage img)
   {
-    SurfDescriptor des = new SurfDescriptor();
+    var des = new SurfDescriptor();
     des.DescribeInterestPoints(ipts, upright, extended, img);
   }
-
 
   /// <summary>
   /// Build descriptor vector for each interest point in the supplied list
@@ -49,11 +48,11 @@ public class SurfDescriptor
     if (ipts.Count == 0) return;
     this.img = img;
       
-    foreach (IPoint ip in ipts)
+    foreach (var ip in ipts)
     {
       // determine descriptor size
-      if (extended) ip.descriptorLength = 128;
-      else ip.descriptorLength = 64;
+      if (extended) ip.DescriptorLength = 128;
+      else ip.DescriptorLength = 64;
 
       // if we want rotation invariance get the orientation
       if (!upright) GetOrientation(ip);
@@ -67,28 +66,28 @@ public class SurfDescriptor
   /// Determine dominant orientation for InterestPoint
   /// </summary>
   /// <param name="ip"></param>
-  void GetOrientation(IPoint ip)
+  private void GetOrientation(IPoint ip)
   {
     const byte Responses = 109;
-    float[] resX = new float[Responses];
-    float[] resY = new float[Responses];
-    float[] Ang = new float[Responses];
-    int idx = 0;
+    var resX = new float[Responses];
+    var resY = new float[Responses];
+    var Ang = new float[Responses];
+    var idx = 0;
     int[] id = { 6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6 };
 
     // Get rounded InterestPoint data
-    int X = (int)Math.Round(ip.x, 0);
-    int Y = (int)Math.Round(ip.y, 0);
-    int S = (int)Math.Round(ip.scale, 0);
+    var X = (int)Math.Round(ip.X, 0);
+    var Y = (int)Math.Round(ip.Y, 0);
+    var S = (int)Math.Round(ip.Scale, 0);
 
     // calculate haar responses for points within radius of 6*scale
-    for (int i = -6; i <= 6; ++i)
+    for (var i = -6; i <= 6; ++i)
     {
-      for (int j = -6; j <= 6; ++j)
+      for (var j = -6; j <= 6; ++j)
       {
         if (i * i + j * j < 36)
         {
-          float gauss = gauss25[id[i + 6], id[j + 6]];
+          var gauss = gauss25[id[i + 6], id[j + 6]];
           resX[idx] = gauss * img.HaarX(Y + j * S, X + i * S, 4 * S);
           resY[idx] = gauss * img.HaarY(Y + j * S, X + i * S, 4 * S);
           Ang[idx] = (float)GetAngle(resX[idx], resY[idx]);
@@ -100,7 +99,7 @@ public class SurfDescriptor
     // calculate the dominant direction 
     float sumX, sumY, max = 0, orientation = 0;
     float ang1, ang2;
-    float pi = (float)Math.PI;
+    var pi = (float)Math.PI;
 
     // loop slides pi/3 window around feature point
     for (ang1 = 0; ang1 < 2 * pi; ang1 += 0.15f)
@@ -108,7 +107,7 @@ public class SurfDescriptor
       ang2 = (ang1 + pi / 3f > 2 * pi ? ang1 - 5 * pi / 3f : ang1 + pi / 3f);
       sumX = sumY = 0;
 
-      for (int k = 0; k < Responses; ++k)
+      for (var k = 0; k < Responses; ++k)
       {
         // determine whether the point is within the window
         if (ang1 < ang2 && ang1 < Ang[k] && Ang[k] < ang2)
@@ -135,7 +134,7 @@ public class SurfDescriptor
     }
 
     // assign orientation of the dominant response vector
-    ip.orientation = (float)orientation;
+    ip.Orientation = (float)orientation;
   }
 
 
@@ -143,7 +142,7 @@ public class SurfDescriptor
   /// Construct descriptor vector for this interest point
   /// </summary>
   /// <param name="bUpright"></param>
-  void GetDescriptor(IPoint ip, bool bUpright, bool bExtended)
+  private void GetDescriptor(IPoint ip, bool bUpright, bool bExtended)
   {
     int sample_x, sample_y, count = 0;
     int i = 0, ix = 0, j = 0, jx = 0, xs = 0, ys = 0;
@@ -154,9 +153,9 @@ public class SurfDescriptor
     float cx = -0.5f, cy = 0f; //Subregion centers for the 4x4 gaussian weighting
 
     // Get rounded InterestPoint data
-    int X = (int)Math.Round(ip.x, 0);
-    int Y = (int)Math.Round(ip.y, 0);
-    int S = (int)Math.Round(ip.scale, 0);
+    var X = (int)Math.Round(ip.X, 0);
+    var Y = (int)Math.Round(ip.Y, 0);
+    var S = (int)Math.Round(ip.Scale, 0);
 
     // Allocate descriptor memory
     ip.SetDescriptorLength(64);
@@ -168,8 +167,8 @@ public class SurfDescriptor
     }
     else
     {
-      co = (float)Math.Cos(ip.orientation);
-      si = (float)Math.Sin(ip.orientation);
+      co = (float)Math.Cos(ip.Orientation);
+      si = (float)Math.Sin(ip.Orientation);
     }
 
     //Calculate descriptor for this interest point
@@ -201,9 +200,9 @@ public class SurfDescriptor
         dx = dy = mdx = mdy = 0f;
         dx_yn = mdx_yn = dy_xn = mdy_xn = 0f;
 
-        for (int k = i; k < i + 9; ++k)
+        for (var k = i; k < i + 9; ++k)
         {
-          for (int l = j; l < j + 9; ++l)
+          for (var l = j; l < j + 9; ++l)
           {
             //Get coords of sample point on the rotated axis
             sample_x = (int)Math.Round(X + (-l * S * si + k * S * co), 0);
@@ -258,18 +257,18 @@ public class SurfDescriptor
         //Add the values to the descriptor vector
         gauss_s2 = Gaussian(cx - 2f, cy - 2f, 1.5f);
 
-        ip.descriptor[count++] = dx * gauss_s2;
-        ip.descriptor[count++] = dy * gauss_s2;
-        ip.descriptor[count++] = mdx * gauss_s2;
-        ip.descriptor[count++] = mdy * gauss_s2;
+        ip.Descriptor[count++] = dx * gauss_s2;
+        ip.Descriptor[count++] = dy * gauss_s2;
+        ip.Descriptor[count++] = mdx * gauss_s2;
+        ip.Descriptor[count++] = mdy * gauss_s2;
 
         // add the extended components
         if (bExtended)
         {
-          ip.descriptor[count++] = dx_yn * gauss_s2;
-          ip.descriptor[count++] = dy_xn * gauss_s2;
-          ip.descriptor[count++] = mdx_yn * gauss_s2;
-          ip.descriptor[count++] = mdy_xn * gauss_s2;
+          ip.Descriptor[count++] = dx_yn * gauss_s2;
+          ip.Descriptor[count++] = dy_xn * gauss_s2;
+          ip.Descriptor[count++] = mdx_yn * gauss_s2;
+          ip.Descriptor[count++] = mdy_xn * gauss_s2;
         }
 
         len += (dx * dx + dy * dy + mdx * mdx + mdy * mdy
@@ -284,13 +283,12 @@ public class SurfDescriptor
     len = (float)Math.Sqrt((double)len);
     if (len > 0)
     {
-      for (int d = 0; d < ip.descriptorLength; ++d)
+      for (var d = 0; d < ip.DescriptorLength; ++d)
       {
-        ip.descriptor[d] /= len;
+        ip.Descriptor[d] /= len;
       }
     }
   }
-
 
   /// <summary>
   /// Get the angle formed by the vector [x,y]
@@ -298,7 +296,7 @@ public class SurfDescriptor
   /// <param name="X"></param>
   /// <param name="Y"></param>
   /// <returns></returns>
-  double GetAngle(float X, float Y)
+  private double GetAngle(float X, float Y)
   {
     if (X >= 0 && Y >= 0)
       return Math.Atan(Y / X);
@@ -312,7 +310,6 @@ public class SurfDescriptor
     return 0;
   }
 
-
   /// <summary>
   /// Get the value of the gaussian with std dev sigma
   /// at the point (x,y)
@@ -321,13 +318,12 @@ public class SurfDescriptor
   /// <param name="y"></param>
   /// <param name="sig"></param>
   /// <returns></returns>
-  float Gaussian(int x, int y, float sig)
+  private float Gaussian(int x, int y, float sig)
   {
-    float pi = (float)Math.PI;
+    var pi = (float)Math.PI;
     return (1f / (2f * pi * sig * sig)) * (float)Math.Exp(-(x * x + y * y) / (2.0f * sig * sig));
   }
 
-
   /// <summary>
   /// Get the value of the gaussian with std dev sigma
   /// at the point (x,y)
@@ -336,12 +332,9 @@ public class SurfDescriptor
   /// <param name="y"></param>
   /// <param name="sig"></param>
   /// <returns></returns>
-  float Gaussian(float x, float y, float sig)
+  private float Gaussian(float x, float y, float sig)
   {
-    float pi = (float)Math.PI;
+    var pi = (float)Math.PI;
     return 1f / (2f * pi * sig * sig) * (float)Math.Exp(-(x * x + y * y) / (2.0f * sig * sig));
   }
-
-
-} // SurfDescriptor
-// OpenSURFcs
+}

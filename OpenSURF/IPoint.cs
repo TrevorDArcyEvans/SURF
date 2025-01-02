@@ -1,4 +1,4 @@
-﻿namespace OpenSURFcs;
+﻿namespace OpenSURF;
 
 public class IPoint
 {
@@ -31,7 +31,7 @@ public class IPoint
   public float Orientation;
 
   /// <summary>
-  /// Sign of laplacian for fast matching purposes
+  /// Sign of Laplacian for fast matching purposes
   /// </summary>
   public int Laplacian;
 

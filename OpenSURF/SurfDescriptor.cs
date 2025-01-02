@@ -1,58 +1,56 @@
-﻿namespace OpenSURFcs;
+﻿namespace OpenSURF;
 
 using System;
 using System.Collections.Generic;
 
 public class SurfDescriptor
 {
-
   /// <summary>
   /// Gaussian distribution with sigma = 2.5.  Used as a fast lookup
   /// </summary>
-  private float[,] gauss25 = new float[7, 7] {
-    {0.02350693969273f,0.01849121369071f,0.01239503121241f,0.00708015417522f,0.00344628101733f,0.00142945847484f,0.00050524879060f},
-    {0.02169964028389f,0.01706954162243f,0.01144205592615f,0.00653580605408f,0.00318131834134f,0.00131955648461f,0.00046640341759f},
-    {0.01706954162243f,0.01342737701584f,0.00900063997939f,0.00514124713667f,0.00250251364222f,0.00103799989504f,0.00036688592278f},
-    {0.01144205592615f,0.00900063997939f,0.00603330940534f,0.00344628101733f,0.00167748505986f,0.00069579213743f,0.00024593098864f},
-    {0.00653580605408f,0.00514124713667f,0.00344628101733f,0.00196854695367f,0.00095819467066f,0.00039744277546f,0.00014047800980f},
-    {0.00318131834134f,0.00250251364222f,0.00167748505986f,0.00095819467066f,0.00046640341759f,0.00019345616757f,0.00006837798818f},
-    {0.00131955648461f,0.00103799989504f,0.00069579213743f,0.00039744277546f,0.00019345616757f,0.00008024231247f,0.00002836202103f}
+  private float[,] gauss25 = new float[7, 7]
+  {
+    { 0.02350693969273f, 0.01849121369071f, 0.01239503121241f, 0.00708015417522f, 0.00344628101733f, 0.00142945847484f, 0.00050524879060f },
+    { 0.02169964028389f, 0.01706954162243f, 0.01144205592615f, 0.00653580605408f, 0.00318131834134f, 0.00131955648461f, 0.00046640341759f },
+    { 0.01706954162243f, 0.01342737701584f, 0.00900063997939f, 0.00514124713667f, 0.00250251364222f, 0.00103799989504f, 0.00036688592278f },
+    { 0.01144205592615f, 0.00900063997939f, 0.00603330940534f, 0.00344628101733f, 0.00167748505986f, 0.00069579213743f, 0.00024593098864f },
+    { 0.00653580605408f, 0.00514124713667f, 0.00344628101733f, 0.00196854695367f, 0.00095819467066f, 0.00039744277546f, 0.00014047800980f },
+    { 0.00318131834134f, 0.00250251364222f, 0.00167748505986f, 0.00095819467066f, 0.00046640341759f, 0.00019345616757f, 0.00006837798818f },
+    { 0.00131955648461f, 0.00103799989504f, 0.00069579213743f, 0.00039744277546f, 0.00019345616757f, 0.00008024231247f, 0.00002836202103f }
   };
 
   /// <summary>
   /// The integral image which is being used
   /// </summary>
-  private IntegralImage img;
-    
-  /// <summary>
-  /// Static one-call do it all function
-  /// </summary>
-  /// <param name="img"></param>
-  /// <param name="ipts"></param>
-  /// <param name="extended"></param>
-  /// <param name="upright"></param>
-  public static void DecribeInterestPoints(List<IPoint> ipts, bool upright, bool extended, IntegralImage img)
-  {
-    var des = new SurfDescriptor();
-    des.DescribeInterestPoints(ipts, upright, extended, img);
-  }
+  private IntegralImage _img;
 
   /// <summary>
   /// Build descriptor vector for each interest point in the supplied list
   /// </summary>
-  /// <param name="img"></param>
   /// <param name="ipts"></param>
   /// <param name="upright"></param>
+  /// <param name="extended"></param>
+  /// <param name="img"></param>
   public void DescribeInterestPoints(List<IPoint> ipts, bool upright, bool extended, IntegralImage img)
   {
-    if (ipts.Count == 0) return;
-    this.img = img;
-      
+    if (ipts.Count == 0)
+    {
+      return;
+    }
+
+    _img = img;
+
     foreach (var ip in ipts)
     {
       // determine descriptor size
-      if (extended) ip.DescriptorLength = 128;
-      else ip.DescriptorLength = 64;
+      if (extended)
+      {
+        ip.DescriptorLength = 128;
+      }
+      else
+      {
+        ip.DescriptorLength = 64;
+      }
 
       // if we want rotation invariance get the orientation
       if (!upright) GetOrientation(ip);
@@ -88,8 +86,8 @@ public class SurfDescriptor
         if (i * i + j * j < 36)
         {
           var gauss = gauss25[id[i + 6], id[j + 6]];
-          resX[idx] = gauss * img.HaarX(Y + j * S, X + i * S, 4 * S);
-          resY[idx] = gauss * img.HaarY(Y + j * S, X + i * S, 4 * S);
+          resX[idx] = gauss * _img.HaarX(Y + j * S, X + i * S, 4 * S);
+          resY[idx] = gauss * _img.HaarY(Y + j * S, X + i * S, 4 * S);
           Ang[idx] = (float)GetAngle(resX[idx], resY[idx]);
           ++idx;
         }
@@ -210,8 +208,8 @@ public class SurfDescriptor
 
             //Get the gaussian weighted x and y responses
             gauss_s1 = Gaussian(xs - sample_x, ys - sample_y, 2.5f * S);
-            rx = (float)img.HaarX(sample_y, sample_x, 2 * S);
-            ry = (float)img.HaarY(sample_y, sample_x, 2 * S);
+            rx = (float)_img.HaarX(sample_y, sample_x, 2 * S);
+            ry = (float)_img.HaarY(sample_y, sample_x, 2 * S);
 
             //Get the gaussian weighted x and y responses on rotated axis
             rrx = gauss_s1 * (-rx * si + ry * co);
@@ -276,6 +274,7 @@ public class SurfDescriptor
 
         j += 9;
       }
+
       i += 9;
     }
 
@@ -299,13 +298,21 @@ public class SurfDescriptor
   private double GetAngle(float X, float Y)
   {
     if (X >= 0 && Y >= 0)
+    {
       return Math.Atan(Y / X);
+    }
     else if (X < 0 && Y >= 0)
+    {
       return Math.PI - Math.Atan(-Y / X);
+    }
     else if (X < 0 && Y < 0)
+    {
       return Math.PI + Math.Atan(Y / X);
+    }
     else if (X >= 0 && Y < 0)
+    {
       return 2 * Math.PI - Math.Atan(-Y / X);
+    }
 
     return 0;
   }

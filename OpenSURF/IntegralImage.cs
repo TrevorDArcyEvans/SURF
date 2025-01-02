@@ -1,7 +1,6 @@
-﻿namespace OpenSURFcs;
+﻿namespace OpenSURF;
 
 using System;
-using System.Drawing;
 
 public class IntegralImage
 {
@@ -28,7 +27,7 @@ public class IntegralImage
     _matrix = new float[height, width];
   }
 
-  public static IntegralImage FromImage(Bitmap image)
+  public static IntegralImage FromImage(IImage image)
   {
     var pic = new IntegralImage(image.Width, image.Height);
 
@@ -49,7 +48,7 @@ public class IntegralImage
         var c = image.GetPixel(x, y);
         rowsum += (cR * c.R + cG * c.G + cB * c.B) / 255f;
 
-        // integral image is rowsum + value above        
+        // integral image is rowsum + value above
         pic[y, x] = rowsum + pic[y - 1, x];
       }
     }

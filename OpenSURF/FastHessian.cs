@@ -1,4 +1,4 @@
-﻿namespace OpenSURFcs;
+﻿namespace OpenSURF;
 
 using System;
 using System.Collections.Generic;
@@ -75,10 +75,10 @@ public class FastHessian
   /// <param name="img"></param>
   public FastHessian(float thresh, int octaves, int init_sample, IntegralImage img)
   {
-    this._thresh = thresh;
-    this._octaves = octaves;
-    this._initSample = init_sample;
-    this._img = img;
+    _thresh = thresh;
+    _octaves = octaves;
+    _initSample = init_sample;
+    _img = img;
   }
 
   /// <summary>
@@ -105,9 +105,15 @@ public class FastHessian
     // filter index map
     int[,] filter_map = { { 0, 1, 2, 3 }, { 1, 3, 4, 5 }, { 3, 5, 6, 7 }, { 5, 7, 8, 9 }, { 7, 9, 10, 11 } };
 
-    // Clear the vector of exisiting ipts
-    if (_ipts == null) _ipts = new List<IPoint>();
-    else _ipts.Clear();
+    // Clear the vector of existing ipts
+    if (_ipts == null)
+    {
+      _ipts = new List<IPoint>();
+    }
+    else
+    {
+      _ipts.Clear();
+    }
 
     // Build the response map
     BuildResponseMap();
@@ -115,21 +121,23 @@ public class FastHessian
     // Get the response layers
     ResponseLayer b, m, t;
     for (var o = 0; o < _octaves; ++o)
-    for (var i = 0; i <= 1; ++i)
     {
-      b = _responseMap[filter_map[o, i]];
-      m = _responseMap[filter_map[o, i + 1]];
-      t = _responseMap[filter_map[o, i + 2]];
-
-      // loop over middle response layer at density of the most 
-      // sparse layer (always top), to find maxima across scale and space
-      for (var r = 0; r < t.Height; ++r)
+      for (var i = 0; i <= 1; ++i)
       {
-        for (var c = 0; c < t.Width; ++c)
+        b = _responseMap[filter_map[o, i]];
+        m = _responseMap[filter_map[o, i + 1]];
+        t = _responseMap[filter_map[o, i + 2]];
+
+        // loop over middle response layer at density of the most 
+        // sparse layer (always top), to find maxima across scale and space
+        for (var r = 0; r < t.Height; ++r)
         {
-          if (IsExtremum(r, c, t, m, b))
+          for (var c = 0; c < t.Width; ++c)
           {
-            InterpolateExtremum(r, c, t, m, b);
+            if (IsExtremum(r, c, t, m, b))
+            {
+              InterpolateExtremum(r, c, t, m, b);
+            }
           }
         }
       }
@@ -151,8 +159,14 @@ public class FastHessian
     // Oct5: 99, 195,291,387
 
     // Deallocate memory and clear any existing response layers
-    if (_responseMap == null) _responseMap = new List<ResponseLayer>();
-    else _responseMap.Clear();
+    if (_responseMap == null)
+    {
+      _responseMap = new List<ResponseLayer>();
+    }
+    else
+    {
+      _responseMap.Clear();
+    }
 
     // Get image attributes
     var w = (_img.Width / _initSample);
@@ -255,13 +269,20 @@ public class FastHessian
   {
     // bounds check
     var layerBorder = (t.Filter + 1) / (2 * t.Step);
-    if (r <= layerBorder || r >= t.Height - layerBorder || c <= layerBorder || c >= t.Width - layerBorder)
+    if (r <= layerBorder ||
+        r >= t.Height - layerBorder ||
+        c <= layerBorder ||
+        c >= t.Width - layerBorder)
+    {
       return false;
+    }
 
     // check the candidate point in the middle layer is above thresh 
     var candidate = m.GetResponse(r, c, t);
     if (candidate < _thresh)
+    {
       return false;
+    }
 
     for (var rr = -1; rr <= 1; ++rr)
     {
@@ -302,7 +323,9 @@ public class FastHessian
     var filterStep = (m.Filter - b.Filter);
 
     // If point is sufficiently close to the actual extremum
-    if (Math.Abs(O[0]) < 0.5f && Math.Abs(O[1]) < 0.5f && Math.Abs(O[2]) < 0.5f)
+    if (Math.Abs(O[0]) < 0.5f &&
+        Math.Abs(O[1]) < 0.5f &&
+        Math.Abs(O[2]) < 0.5f)
     {
       var ipt = new IPoint();
       ipt.X = (float)((c + O[0]) * t.Step);
@@ -330,6 +353,7 @@ public class FastHessian
     ds = (t.GetResponse(r, c) - b.GetResponse(r, c, t)) / 2f;
 
     double[,] D = { { dx }, { dy }, { ds } };
+
     return D;
   }
 
@@ -366,6 +390,7 @@ public class FastHessian
     H[2, 0] = dxs;
     H[2, 1] = dys;
     H[2, 2] = dss;
+
     return H;
   }
 }

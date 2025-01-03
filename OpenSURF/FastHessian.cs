@@ -120,13 +120,13 @@ public class FastHessian
 
     // Get the response layers
     ResponseLayer b, m, t;
-    for (var o = 0; o < _octaves; ++o)
+    for (var oct = 0; oct < _octaves; ++oct)
     {
       for (var i = 0; i <= 1; ++i)
       {
-        b = _responseMap[filter_map[o, i]];
-        m = _responseMap[filter_map[o, i + 1]];
-        t = _responseMap[filter_map[o, i + 2]];
+        b = _responseMap[filter_map[oct, i]];
+        m = _responseMap[filter_map[oct, i + 1]];
+        t = _responseMap[filter_map[oct, i + 2]];
 
         // loop over middle response layer at density of the most 
         // sparse layer (always top), to find maxima across scale and space
@@ -261,9 +261,9 @@ public class FastHessian
   /// </summary>
   /// <param name="r">Row to be tested</param>
   /// <param name="c">Column to be tested</param>
-  /// <param name="t">Top ReponseLayer</param>
-  /// <param name="m">Middle ReponseLayer</param>
-  /// <param name="b">Bottome ReponseLayer</param>
+  /// <param name="t">Top ResponseLayer</param>
+  /// <param name="m">Middle ResponseLayer</param>
+  /// <param name="b">Bottom ResponseLayer</param>
   /// <returns></returns>
   private bool IsExtremum(int r, int c, ResponseLayer t, ResponseLayer m, ResponseLayer b)
   {
@@ -339,10 +339,11 @@ public class FastHessian
   /// <summary>
   /// Build Matrix of First Order Scale-Space derivatives
   /// </summary>
-  /// <param name="octave"></param>
-  /// <param name="interval"></param>
-  /// <param name="row"></param>
-  /// <param name="column"></param>
+  /// <param name="r"></param>
+  /// <param name="c"></param>
+  /// <param name="t"></param>
+  /// <param name="m"></param>
+  /// <param name="b"></param>
   /// <returns>3x1 Matrix of Derivatives</returns>
   private double[,] BuildDerivative(int r, int c, ResponseLayer t, ResponseLayer m, ResponseLayer b)
   {
@@ -360,10 +361,11 @@ public class FastHessian
   /// <summary>
   /// Build Hessian Matrix 
   /// </summary>
-  /// <param name="octave"></param>
-  /// <param name="interval"></param>
-  /// <param name="row"></param>
-  /// <param name="column"></param>
+  /// <param name="r"></param>
+  /// <param name="c"></param>
+  /// <param name="t"></param>
+  /// <param name="m"></param>
+  /// <param name="b"></param>
   /// <returns>3x3 Matrix of Second Order Derivatives</returns>
   private double[,] BuildHessian(int r, int c, ResponseLayer t, ResponseLayer m, ResponseLayer b)
   {

@@ -35,7 +35,7 @@ internal static class Program
       using var img = await Image.LoadAsync<L8>(inputFile);
       using var iimg = Utils.CreateIImage(img);
       var intImg = IntegralImage.FromImage(iimg);
-      var intPts = FastHessian.GetIpoints(0.001f, 2, 2, intImg);
+      var intPts = FastHessian.GetIpoints(opt.Threshold, opt.Octaves, opt.InitialSamples, intImg);
       var sd = new SurfDescriptor(intImg);
       sd.DescribeInterestPoints(intPts, false, false);
 

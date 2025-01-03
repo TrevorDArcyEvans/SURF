@@ -1,8 +1,8 @@
-﻿using OpenSURF;
-
-namespace SURF.UI.CLI;
+﻿namespace SURF.UI.CLI;
 
 using CommandLine;
+using Newtonsoft.Json;
+using OpenSURF;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -21,6 +21,15 @@ internal static class Program
 
   private static async Task Run(Options opt)
   {
+    var redPen = Pens.Solid(Color.Red, 1);
+    var bluePen = Pens.Solid(Color.Blue, 1);
+    var whitePen = Pens.Solid(Color.White, 1);
+
+    var jsonFmt = new JsonSerializerSettings
+    {
+      Formatting = Formatting.Indented
+    };
+
     foreach (var inputFile in opt.InputFiles)
     {
       using var img = await Image.LoadAsync<L8>(inputFile);
@@ -32,10 +41,6 @@ internal static class Program
 
       var imgFileName = System.IO.Path.GetFileNameWithoutExtension(inputFile);
       var outFileName = $"interest-points-{imgFileName}.jpg";
-
-      var redPen = Pens.Solid(Color.Red, 1);
-      var bluePen = Pens.Solid(Color.Blue, 1);
-      var whitePen = Pens.Solid(Color.White, 1);
       using var outImg = img.CloneAs<Rgba32>();
       outImg.Mutate(x =>
       {
@@ -58,7 +63,11 @@ internal static class Program
       });
       await outImg.SaveAsJpegAsync(outFileName);
 
-      Console.WriteLine($"{imgFileName} --> {outFileName}");
+      var json = JsonConvert.SerializeObject(intPts, jsonFmt);
+      var jsonFileName = System.IO.Path.ChangeExtension(outFileName, "json");
+      await File.WriteAllTextAsync(jsonFileName, json);
+
+      Console.WriteLine($"{imgFileName} --> {outFileName} + {jsonFileName}");
     }
   }
 
